@@ -52,3 +52,5 @@ draw <- function(count, deck, hand = list()) {
   }, .init = deck)
   list(deck = nextDeck, drawn = c(draws, hand))
 }
+
+init <- draw(7, deckList)
