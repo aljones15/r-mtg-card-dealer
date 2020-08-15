@@ -18,8 +18,11 @@ deckParser <- function(d) {
   d %>%
     select(cards) %>%
     mutate(
-      count = lapply(cards, function(x) { strsplit(x, '(?=\\d+)', perl = TRUE)[[1]][1] }),
-      name = lapply(cards, function(x) { trimws(strsplit(x, '(?=\\d+)', perl = TRUE)[[1]][2]) })
+      count = lapply(cards, function(x) { strsplit(x, ' ', perl = TRUE)[[1]][1] }),
+      name = lapply(cards, function(x) {
+        cardNames <- strsplit(x, ' ', perl = TRUE)[[1]]
+        trimws(paste(cardNames[2:length(cardNames)], collapse = ' '))
+      })
     )
 }
 
@@ -32,5 +35,15 @@ deckList <- unlist(apply(main, 1, function(row) {
   rep(row$name, times = row$count)
 }))
 
+length(deckList)
+
 "get a sample of 7 cards"
 sample(deckList, 7, replace = FALSE)
+
+"this needs to reduce a deck size each time"
+draw <- function(count, deck) {
+  s <- sample(deck, count, replace = FALSE)
+  matches <- match(s, deck)
+  nextDeck <- deck[-matches]
+  nextDeck
+}
