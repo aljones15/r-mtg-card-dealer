@@ -1,4 +1,5 @@
 library(dplyr)
+library(purrr)
 
 "get the deck from a \n sep file"
 deck <- read.delim(
@@ -14,6 +15,7 @@ deck <- read.delim(
 sideboardStart <- grep("(^\\s*Sideboard\\s*$)|(^$)", deck$cards, perl = TRUE)
 
 "get the count and name"
+"count really should be first numbers in the string until a space"
 deckParser <- function(d) {
   d %>%
     select(cards) %>%
@@ -21,6 +23,7 @@ deckParser <- function(d) {
       count = lapply(cards, function(x) { strsplit(x, ' ', perl = TRUE)[[1]][1] }),
       name = lapply(cards, function(x) {
         cardNames <- strsplit(x, ' ', perl = TRUE)[[1]]
+        "join the words in the card name that were split apart"
         trimws(paste(cardNames[2:length(cardNames)], collapse = ' '))
       })
     )
@@ -43,7 +46,9 @@ sample(deckList, 7, replace = FALSE)
 "this needs to reduce a deck size each time"
 draw <- function(count, deck) {
   s <- sample(deck, count, replace = FALSE)
-  matches <- match(s, deck)
-  nextDeck <- deck[-matches]
+  nextDeck <- reduce(s, function(acc, nextCard) {
+    m <- match(nextCard, acc)
+    acc[-m]
+  }, .init = deck)
   nextDeck
 }
