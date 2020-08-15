@@ -43,12 +43,12 @@ length(deckList)
 "get a sample of 7 cards"
 sample(deckList, 7, replace = FALSE)
 
-"this needs to reduce a deck size each time"
-draw <- function(count, deck) {
-  s <- sample(deck, count, replace = FALSE)
-  nextDeck <- reduce(s, function(acc, nextCard) {
+"this reduces a deck size with each draw"
+draw <- function(count, deck, hand = list()) {
+  draws <- sample(deck, count, replace = FALSE)
+  nextDeck <- reduce(draws, function(acc, nextCard) {
     m <- match(nextCard, acc)
     acc[-m]
   }, .init = deck)
-  nextDeck
+  list(deck = nextDeck, drawn = c(draws, hand))
 }
