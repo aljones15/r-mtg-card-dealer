@@ -29,6 +29,12 @@ deckParser <- function(d) {
     )
 }
 
+fetchCard <- function(name) {
+  search <- gsub(" ", "+", name)
+  card <- GET(paste("https://api.scryfall.com/cards/named?exact=", search, sep=""))
+  fromJSON(content(card, "text"))
+}
+
 "separate deck and sideboard"
 main <- deckParser(slice(deck, n = 1:(sideboardStart - 1)))
 sideboard <- deckParser(slice(deck, n = (sideboardStart + 1):length(deck$cards)))
