@@ -45,9 +45,13 @@ main <- deckParser(slice(deck, n = 1:(sideboardStart - 1)))
 sideboard <- deckParser(slice(deck, n = (sideboardStart + 1):length(deck$cards)))
 
 "turn the data frame into a repeating list"
-deckList <- unlist(apply(main, 1, function(row) {
-  rep(row$name, times = row$count)
-}))
+makeDeck <- function(deck) {
+  unlist(apply(deck, 1, function(row) {
+    rep(row$name, times = row$count)
+  }))
+}
+
+deckList <- makeDeck(main)
 
 length(deckList)
 
