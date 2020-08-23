@@ -1,5 +1,7 @@
 library(dplyr)
 library(purrr)
+library(httr)
+library(jsonlite)
 
 "get the deck from a \n sep file"
 deck <- read.delim(
@@ -30,10 +32,13 @@ deckParser <- function(d) {
 }
 
 fetchCard <- function(name) {
+  "turn the spaces into +s"
   search <- gsub(" ", "+", name)
   card <- GET(paste("https://api.scryfall.com/cards/named?exact=", search, sep=""))
   fromJSON(content(card, "text"))
 }
+
+"we need to get oracle_text, mana_cost, and keywords, type_line"
 
 "separate deck and sideboard"
 main <- deckParser(slice(deck, n = 1:(sideboardStart - 1)))
