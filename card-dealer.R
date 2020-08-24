@@ -46,24 +46,31 @@ sideboard <- deckParser(slice(deck, n = (sideboardStart + 1):length(deck$cards))
 
 "turn the data frame into a repeating list"
 makeDeck <- function(deck) {
-  unlist(apply(deck, 1, function(row) {
-    rep(row$name, times = row$count)
-  }))
+  apply(deck, 1, function(row) {
+    card <- fetchCard(row$name)
+    "flip cards are missing text and cost"
+    rows <- list(
+      name = card$name,
+      text = card$oracle_text,
+      cost = card$mana_cost,
+      type = card$type_line
+    )
+    replicate(rows, n = row$count)
+  })
 }
 
-deckList <- makeDeck(main)
-
-length(deckList)
+"transpose after reducing the matrixies to a single matrix"
+deckList <- t(reduce(makeDeck(main), cbind))
 
 "get a sample of 7 cards"
-sample(deckList, 7, replace = FALSE)
+deckList[sample(nrow(deckList), 7, replace = FALSE), ]
 
 "this reduces a deck size with each draw"
 draw <- function(count, deck, hand = list()) {
-  draws <- sample(deck, count, replace = FALSE)
+  draws <- deck[sample(nrow(deck), count, replace = FALSE)]
   nextDeck <- reduce(draws, function(acc, nextCard) {
     m <- match(nextCard, acc)
-    acc[-m]
+    acc[-m, ]
   }, .init = deck)
   list(deck = nextDeck, drawn = c(draws, hand))
 }
