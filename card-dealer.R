@@ -67,9 +67,13 @@ deckList[sample(nrow(deckList), 7, replace = FALSE), ]
 
 "this reduces a deck size with each draw"
 draw <- function(count, deck, hand = list()) {
-  draws <- deck[sample(nrow(deck), count, replace = FALSE)]
+  draws <- deck[sample(nrow(deck), count, replace = FALSE), ]
   nextDeck <- reduce(draws, function(acc, nextCard) {
     m <- match(nextCard, acc)
+    if(m == 0 || is.na(m)) {
+      return(acc)
+    }
+    print(m)
     acc[-m, ]
   }, .init = deck)
   list(deck = nextDeck, drawn = c(draws, hand))
